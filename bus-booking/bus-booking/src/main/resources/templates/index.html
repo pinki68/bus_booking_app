@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home - Bus Booking System</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <style>
+        /* Additional styles for the home page */
+        .hero {
+            background-color: #1a237e;
+            color: white;
+            padding: 60px 20px;
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .hero h1 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+        
+        .hero p {
+            font-size: 1.2rem;
+            max-width: 800px;
+            margin: 0 auto 30px;
+        }
+        
+        .cta-button {
+            display: inline-block;
+            padding: 15px 30px;
+            background-color: white;
+            color: #1a237e;
+            font-weight: bold;
+            text-decoration: none;
+            border-radius: 4px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        
+        .cta-button:hover {
+            background-color: #e8eaf6;
+        }
+        
+        .features {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .feature-card {
+            flex: 1;
+            min-width: 250px;
+            max-width: 350px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .feature-card h3 {
+            color: #1a237e;
+            margin-bottom: 15px;
+        }
+        
+        /* Search form styles */
+        .search-container {
+            max-width: 800px;
+            margin: 0 auto 20px;
+            background-color: white;
+            border-radius: 8px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+        }
+        
+        .search-form {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .form-group {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        
+        .search-btn {
+            padding: 12px 25px;
+            background-color: #1a237e;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+        
+        .search-btn:hover {
+            background-color: #303f9f;
+        }
+        
+        /* Results styles */
+        .search-results {
+            margin-top: 30px;
+        }
+        
+        .bus-card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 15px;
+            padding: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .bus-info {
+            flex: 2;
+            min-width: 250px;
+        }
+        
+        .bus-time {
+            flex: 1;
+            min-width: 200px;
+            text-align: center;
+        }
+        
+        .bus-price {
+            flex: 1;
+            min-width: 150px;
+            text-align: right;
+        }
+        
+        .book-btn {
+            padding: 10px 15px;
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: background-color 0.3s;
+        }
+        
+        .book-btn:hover {
+            background-color: #388e3c;
+        }
+        
+        @media (max-width: 768px) {
+            .feature-card {
+                min-width: 100%;
+            }
+            
+            .bus-card {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .bus-time, .bus-price {
+                text-align: center;
+                margin-top: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="navbar">
+            <a href="/" class="logo">BusBooker</a>
+            <ul class="nav-links">
+                <li><a href="/">Home</a></li>
+                <li><a href="/buses">Buses</a></li>
+                <li><a href="/bookings">My Bookings</a></li>
+                <div class="auth-buttons">
+                    <li><a href="/login">Login</a></li>
+                    <li><a href="/register">Register</a></li>
+                </div>
+              <!-- <div class="user-info" style="display: none;"> -->
+               <div class="user-info">
+                    <li>Welcome, <span id="userUsername"></span></li>
+                      <li><a href="/profile">My Profile</a></li>
+                    <li><a href="#" id="logoutButton">Logout</a></li>
+                </div>
+            </ul>
+        </div>
+    </header>
+    
+    <div class="hero">
+        <h1>Book Your Bus Tickets Online</h1>
+        <p>Fast, secure, and convenient way to book bus tickets for your journey. Browse through hundreds of routes and find the best deal for your travel needs.</p>
+        
+        <div class="search-container">
+            <h3 style="margin-bottom: 15px; color: #1a237e;">Find Your Bus</h3>
+            <form id="busSearchForm" class="search-form">
+                <div class="form-group">
+                    <label for="source" style="display: block; margin-bottom: 5px; font-weight: bold;">From</label>
+                    <input type="text" id="source" name="source" class="form-control" placeholder="Enter source city" required>
+                </div>
+                <div class="form-group">
+                    <label for="destination" style="display: block; margin-bottom: 5px; font-weight: bold;">To</label>
+                    <input type="text" id="destination" name="destination" class="form-control" placeholder="Enter destination city" required>
+                </div>
+                <div class="form-group">
+                    <label for="travelDate" style="display: block; margin-bottom: 5px; font-weight: bold;">Travel Date</label>
+                    <input type="date" id="travelDate" name="travelDate" class="form-control" required>
+                </div>
+                <button type="submit" class="search-btn">Search Buses</button>
+            </form>
+            <div id="searchError" style="color: #f44336; margin-top: 10px; font-weight: bold; display: none;"></div>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div id="searchResults" class="search-results" style="display: none;">
+            <h2>Available Buses</h2>
+            <div id="busList"></div>
+        </div>
+        
+        <div class="features">
+            <div class="feature-card">
+                <h3>Easy Booking</h3>
+                <p>Book your bus tickets in just a few clicks. Our user-friendly interface makes booking quick and hassle-free.</p>
+            </div>
+            
+            <div class="feature-card">
+                <h3>Secure Payments</h3>
+                <p>Your payment information is always secure with our advanced encryption and security measures.</p>
+            </div>
+            
+            <div class="feature-card">
+                <h3>24/7 Support</h3>
+                <p>Our customer support team is available round the clock to assist you with any queries or issues.</p>
+            </div>
+        </div>
+        
+        <div class="row mt-4" id="dev-tools" style="display: none;">
+            <div class="col-12">
+                <div class="card border-warning">
+                    <div class="card-header bg-warning text-dark">
+                        <h5><i class="fas fa-tools"></i> Development Tools</h5>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">Development links for testing:</p>
+                        <div class="d-flex flex-wrap gap-2">
+                            <a href="/passenger-form?busId=1" class="btn btn-outline-primary">
+                                <i class="fas fa-vial"></i> Test Passenger Form
+                            </a>
+                            <button onclick="localStorage.removeItem('authToken'); location.reload();" class="btn btn-outline-danger">
+                                <i class="fas fa-sign-out-alt"></i> Clear Auth Token
+                            </button>
+                            <button onclick="localStorage.clear(); location.reload();" class="btn btn-outline-danger">
+                                <i class="fas fa-trash"></i> Clear All Storage
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <div class="container">
+            <p>&copy; 2023 BusBooker. All rights reserved.</p>
+        </div>
+    </footer>
+    
+    <!-- Scripts with numeric version to prevent caching issues -->
+    <script th:src="@{/js/common.js?v=1}"></script>
+    <script th:src="@{/js/auth.js?v=1}"></script>
+    <script th:src="@{/js/search.js?v=1}"></script>
+    
+    <!-- Inline script to handle search form if external scripts fail -->
+    <script>
+        // Backup search functionality in case the external script fails
+        if (typeof searchBuses !== 'function') {
+            console.log('[INLINE] Setting up backup search function');
+            window.searchBuses = function() {
+                try {
+                    const source = document.getElementById('source').value;
+                    const destination = document.getElementById('destination').value;
+                    const travelDate = document.getElementById('travelDate').value;
+                    
+                    if (!source || !destination || !travelDate) {
+                        alert('Please fill in all fields: From, To, and Date');
+                        return;
+                    }
+                    
+                    // Create the query string for navigation
+                    const queryString = `source=${encodeURIComponent(source)}&destination=${encodeURIComponent(destination)}&date=${encodeURIComponent(travelDate)}`;
+                    
+                    // Redirect to the buses page
+                    window.location.href = `/buses?${queryString}`;
+                } catch (error) {
+                    console.error('[INLINE] Error during search:', error);
+                    alert('An error occurred while searching for buses. Please try again.');
+                }
+            };
+            
+            document.addEventListener('DOMContentLoaded', function() {
+                const searchForm = document.getElementById('busSearchForm');
+                if (searchForm) {
+                    searchForm.addEventListener('submit', function(e) {
+                        e.preventDefault();
+                        searchBuses();
+                    });
+                    
+                    // Set min date for the travel date input to today
+                    const today = new Date().toISOString().split('T')[0];
+                    const travelDateInput = document.getElementById('travelDate');
+                    if (travelDateInput) {
+                        travelDateInput.min = today;
+                        travelDateInput.value = today;
+                    }
+                }
+            });
+        }
+    </script>
+    
+    <script>
+        // Show dev tools on localhost or if query parameter dev=true
+        document.addEventListener('DOMContentLoaded', function() {
+            if (
+                window.location.hostname === 'localhost' || 
+                window.location.hostname === '127.0.0.1' ||
+                (new URLSearchParams(window.location.search)).has('dev')
+            ) {
+                document.getElementById('dev-tools').style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html> 

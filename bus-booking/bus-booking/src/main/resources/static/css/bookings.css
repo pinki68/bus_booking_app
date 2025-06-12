@@ -1,0 +1,298 @@
+/* Booking Page Styles */
+
+.bookings-container {
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 30px;
+}
+
+.page-header {
+    margin-bottom: 30px;
+}
+
+.booking-filters {
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 30px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.no-bookings {
+    text-align: center;
+    padding: 60px 20px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.no-bookings h3 {
+    color: #1a237e;
+    margin-bottom: 20px;
+}
+
+.booking-card {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.booking-card:hover {
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+}
+
+.booking-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.booking-header h3 {
+    margin: 0;
+    font-size: 1.25rem;
+    color: #343a40;
+}
+
+.booking-header small {
+    color: #6c757d;
+    display: block;
+    margin-top: 5px;
+}
+
+.booking-status {
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.status-confirmed {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.status-pending {
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+.status-cancelled {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+.status-completed {
+    background-color: #cfe2ff;
+    color: #084298;
+}
+
+.booking-details {
+    display: flex;
+    flex-wrap: wrap;
+    padding: 20px;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.bus-details, .booking-info {
+    flex: 1;
+    min-width: 300px;
+    padding: 0 15px;
+}
+
+.detail-row {
+    display: flex;
+    margin-bottom: 10px;
+}
+
+.detail-label {
+    width: 40%;
+    font-weight: 600;
+    color: #6c757d;
+}
+
+h4 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    color: #343a40;
+    font-size: 1.1rem;
+}
+
+.booking-passengers {
+    padding: 20px;
+    border-bottom: 1px solid #e9ecef;
+    background-color: #f8f9fa;
+}
+
+.passengers-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.passenger-item {
+    background-color: #fff;
+    border-radius: 6px;
+    padding: 15px;
+    flex: 1;
+    min-width: 200px;
+    max-width: 300px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    border-left: 3px solid #4285f4;
+}
+
+.passenger-name {
+    font-weight: 600;
+    margin-bottom: 5px;
+    color: #333;
+}
+
+.passenger-details, .passenger-seat {
+    font-size: 0.9rem;
+    color: #6c757d;
+    margin-top: 5px;
+}
+
+.booking-actions {
+    display: flex;
+    gap: 10px;
+    padding: 15px 20px;
+    background-color: #f8f9fa;
+    justify-content: flex-end;
+}
+
+.action-btn {
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 0.9rem;
+    border: none;
+    transition: all 0.2s;
+}
+
+.cancel-btn {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+.cancel-btn:hover {
+    background-color: #f5c6cb;
+}
+
+.eticket-btn {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.eticket-btn:hover {
+    background-color: #c3e6cb;
+}
+
+.expand-btn {
+    width: 100%;
+    padding: 10px;
+    text-align: center;
+    background-color: #f8f9fa;
+    border: none;
+    color: #4285f4;
+    cursor: pointer;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    transition: background-color 0.2s;
+}
+
+.expand-btn:hover {
+    background-color: #e9ecef;
+}
+
+.booking-details-full {
+    display: none;
+    padding: 20px;
+    background-color: #f8f9fa;
+}
+
+.booking-card.expanded .booking-details-full {
+    display: block;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+    .booking-details {
+        flex-direction: column;
+    }
+    
+    .bus-details, .booking-info {
+        width: 100%;
+        padding: 0;
+        margin-bottom: 20px;
+    }
+    
+    .passenger-item {
+        min-width: 100%;
+    }
+    
+    .detail-label {
+        width: 50%;
+    }
+}
+
+/* Loading styles */
+.loading {
+    text-align: center;
+    padding: 30px;
+    color: #6c757d;
+}
+
+/* Error message styles */
+.error-message {
+    background-color: #f8d7da;
+    color: #721c24;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+/* Local booking indicator */
+.local-booking {
+    position: relative;
+}
+
+.local-booking::before {
+    content: "Local";
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background-color: #e9ecef;
+    color: #6c757d;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+/* Debug styles */
+.debug-tools {
+    margin-top: 20px;
+    padding: 15px;
+    border-radius: 8px;
+    background-color: #f5f5f5;
+    border: 1px dashed #ddd;
+}
+
+.debug-tools h5 {
+    margin-bottom: 10px;
+    color: #555;
+} 

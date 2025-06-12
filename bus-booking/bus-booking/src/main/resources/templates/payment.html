@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment - Bus Booking System</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <style>
+        .payment-container {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 30px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .payment-header {
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .payment-summary {
+            background-color: #f5f5f5;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+        
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        
+        .total-row {
+            font-weight: bold;
+            font-size: 1.2rem;
+            border-top: 1px solid #ddd;
+            padding-top: 10px;
+            margin-top: 10px;
+        }
+        
+        .payment-methods {
+            margin-bottom: 30px;
+        }
+        
+        .payment-method {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s;
+        }
+        
+        .payment-method:hover {
+            border-color: #1a237e;
+            background-color: #f8f9fa;
+        }
+        
+        .payment-method.selected {
+            border-color: #1a237e;
+            background-color: #e8eaf6;
+        }
+        
+        .payment-method-icon {
+            width: 50px;
+            height: 50px;
+            margin-right: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #f5f5f5;
+            border-radius: 4px;
+            font-size: 24px;
+        }
+        
+        .payment-method-details {
+            flex-grow: 1;
+        }
+        
+        .payment-method-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .payment-method-info {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .payment-form {
+            display: none;
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+        
+        .payment-form.active {
+            display: block;
+        }
+        
+        .form-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .form-group {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        
+        .button-group {
+            margin-top: 30px;
+            display: flex;
+            gap: 15px;
+        }
+        
+        .action-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+        
+        .primary-btn {
+            background-color: #4caf50;
+            color: white;
+        }
+        
+        .primary-btn:hover {
+            background-color: #388e3c;
+        }
+        
+        .secondary-btn {
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        
+        .secondary-btn:hover {
+            background-color: #e0e0e0;
+        }
+        
+        .save-card-checkbox {
+            margin-top: 15px;
+        }
+        
+        .payment-success {
+            text-align: center;
+            padding: 40px 20px;
+            display: none;
+        }
+        
+        .success-icon {
+            font-size: 80px;
+            color: #4caf50;
+            margin-bottom: 20px;
+        }
+        
+        .payment-error {
+            background-color: #ffebee;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            color: #d32f2f;
+            display: none;
+        }
+        
+        /* Credit card styles */
+        .card-container {
+            perspective: 1000px;
+            width: 100%;
+            max-width: 400px;
+            height: 200px;
+            margin: 0 auto 20px;
+        }
+        
+        .credit-card {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.6s;
+        }
+        
+        .credit-card.flipped {
+            transform: rotateY(180deg);
+        }
+        
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 10px;
+            padding: 20px;
+            box-sizing: border-box;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .card-front {
+            background: linear-gradient(135deg, #1a237e, #303f9f);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        
+        .card-back {
+            background-color: #f5f5f5;
+            transform: rotateY(180deg);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .card-chip {
+            width: 40px;
+            height: 30px;
+            background-color: #ffd700;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        
+        .card-number {
+            font-size: 1.2rem;
+            letter-spacing: 2px;
+            margin-bottom: 15px;
+        }
+        
+        .card-holder {
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+        
+        .card-expiry {
+            font-size: 0.9rem;
+        }
+        
+        .card-strip {
+            height: 40px;
+            background-color: #333;
+            margin-bottom: 20px;
+        }
+        
+        .card-cvv {
+            background-color: white;
+            height: 40px;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            padding: 0 10px;
+            font-size: 1rem;
+        }
+        
+        .upi-form, .netbanking-form, .wallet-form {
+            text-align: center;
+        }
+        
+        .bank-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .bank-option {
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 10px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s;
+        }
+        
+        .bank-option:hover, .bank-option.selected {
+            border-color: #1a237e;
+            background-color: #e8eaf6;
+        }
+        
+        .wallet-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .wallet-option {
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 15px;
+            cursor: pointer;
+            flex: 1;
+            min-width: 120px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+        
+        .wallet-option:hover, .wallet-option.selected {
+            border-color: #1a237e;
+            background-color: #e8eaf6;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="navbar">
+            <a href="/" class="logo">BusBooker</a>
+            <ul class="nav-links">
+                <li><a href="/">Home</a></li>
+                <li><a href="/buses">Buses</a></li>
+                <li><a href="/bookings">My Bookings</a></li>
+                <div class="auth-buttons">
+                    <li><a href="/login">Login</a></li>
+                    <li><a href="/register">Register</a></li>
+                </div>
+                <div class="user-info" style="display: none;">
+                    <li>Welcome, <span id="userUsername"></span></li>
+                    <li><a href="#" id="logoutButton">Logout</a></li>
+                </div>
+            </ul>
+        </div>
+    </header>
+    
+    <div class="container">
+        <div class="payment-container">
+            <!-- Add debugging info section (hidden in production) -->
+            <div id="debugInfo" style="background-color: #f8f9fa; padding: 10px; margin-bottom: 20px; font-family: monospace; font-size: 12px; display: none;">
+                <h4>Debug Information</h4>
+                <div id="debugToken"></div>
+                <div id="debugUser"></div>
+                <div id="debugBookingId"></div>
+                <div id="debugPaymentStatus" style="margin-top: 10px; border-top: 1px solid #ddd; padding-top: 10px;"></div>
+                <div id="debugLog" style="margin-top: 10px; max-height: 200px; overflow-y: auto;"></div>
+                <button onclick="toggleDebug()" style="margin-top: 10px;">Hide Debug</button>
+            </div>
+            
+            <div class="payment-header">
+                <h2>Complete Your Payment</h2>
+                <p>Select a payment method to proceed with your booking</p>
+                <div class="mt-3">
+                    <button onclick="toggleDebug()" class="btn btn-link btn-sm" style="color: #999; font-size: 12px;">Debug Info</button>
+                </div>
+            </div>
+            
+            <div class="payment-summary">
+                <h3>Booking Summary</h3>
+                <div class="summary-row">
+                    <span>Bus:</span>
+                    <span id="busNumber">--</span>
+                </div>
+                <div class="summary-row">
+                    <span>Route:</span>
+                    <span id="busRoute">--</span>
+                </div>
+                <div class="summary-row">
+                    <span>Departure:</span>
+                    <span id="busDeparture">--</span>
+                </div>
+                <div class="summary-row">
+                    <span>Number of Seats:</span>
+                    <span id="totalSeats">--</span>
+                </div>
+                <div class="summary-row">
+                    <span>Fare per Seat:</span>
+                    <span>₹<span id="perSeatFare">--</span></span>
+                </div>
+                <div class="summary-row total-row">
+                    <span>Total Amount:</span>
+                    <span>₹<span id="totalFare">--</span></span>
+                </div>
+            </div>
+            
+            <div class="payment-methods">
+                <h3>Select Payment Method</h3>
+                
+                <div class="payment-method" data-method="card">
+                    <div class="payment-method-icon">💳</div>
+                    <div class="payment-method-details">
+                        <div class="payment-method-title">Credit/Debit Card</div>
+                        <div class="payment-method-info">Pay securely with your card</div>
+                    </div>
+                </div>
+                
+                <div class="payment-method" data-method="upi">
+                    <div class="payment-method-icon">📱</div>
+                    <div class="payment-method-details">
+                        <div class="payment-method-title">UPI</div>
+                        <div class="payment-method-info">Pay instantly with UPI</div>
+                    </div>
+                </div>
+                
+                <div class="payment-method" data-method="netbanking">
+                    <div class="payment-method-icon">🏦</div>
+                    <div class="payment-method-details">
+                        <div class="payment-method-title">Net Banking</div>
+                        <div class="payment-method-info">Pay through your bank account</div>
+                    </div>
+                </div>
+                
+                <div class="payment-method" data-method="wallet">
+                    <div class="payment-method-icon">👛</div>
+                    <div class="payment-method-details">
+                        <div class="payment-method-title">Wallets</div>
+                        <div class="payment-method-info">Pay with digital wallets</div>
+                    </div>
+                </div>
+                
+                <div id="savedPaymentMethods">
+                    <!-- Saved payment methods will be loaded here -->
+                </div>
+            </div>
+            
+            <div class="payment-error" id="paymentError">
+                There was an error processing your payment. Please try again.
+                <div id="loginButtonContainer" style="display: none; margin-top: 15px;">
+                    <a href="/login" class="action-btn primary-btn" style="display: inline-block; padding: 8px 15px; font-size: 0.9rem;">
+                        Log in to continue
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Add this right after the payment-error div -->
+            <div class="payment-error" id="authError" style="display: none;">
+                <p>Please log in to proceed with payment</p>
+                <div id="loginButtonContainer" style="margin-top: 15px;">
+                    <button id="loginButton" class="action-btn primary-btn">Log In</button>
+                </div>
+            </div>
+            
+            <!-- Credit/Debit Card Form -->
+            <div class="payment-form" id="cardForm">
+                <h3>Credit/Debit Card Details</h3>
+                
+                <div class="card-container">
+                    <div class="credit-card" id="creditCard">
+                        <div class="card-front">
+                            <div class="card-chip"></div>
+                            <div class="card-number" id="cardPreviewNumber">**** **** **** ****</div>
+                            <div>
+                                <div class="card-holder" id="cardPreviewName">CARD HOLDER</div>
+                                <div class="card-expiry">
+                                    Expires: <span id="cardPreviewExpiry">MM/YY</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-back">
+                            <div class="card-strip"></div>
+                            <div class="card-cvv" id="cardPreviewCvv">***</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="cardNumber">Card Number</label>
+                        <input type="text" id="cardNumber" class="form-control" placeholder="1234 5678 9012 3456" maxlength="19">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="cardName">Card Holder Name</label>
+                        <input type="text" id="cardName" class="form-control" placeholder="Name on card">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="cardExpiry">Expiry Date</label>
+                        <input type="text" id="cardExpiry" class="form-control" placeholder="MM/YY" maxlength="5">
+                    </div>
+                    <div class="form-group">
+                        <label for="cardCvv">CVV</label>
+                        <input type="text" id="cardCvv" class="form-control" placeholder="123" maxlength="3">
+                    </div>
+                </div>
+                
+                <div class="save-card-checkbox">
+                    <input type="checkbox" id="saveCard">
+                    <label for="saveCard">Save this card for future payments</label>
+                </div>
+            </div>
+            
+            <!-- UPI Form -->
+            <div class="payment-form" id="upiForm">
+                <h3>UPI Payment</h3>
+                <div class="upi-form">
+                    <div class="form-group">
+                        <label for="upiId">UPI ID</label>
+                        <input type="text" id="upiId" class="form-control" placeholder="username@upi">
+                    </div>
+                    <p style="margin-top: 15px;">You will receive a payment request notification on your UPI app</p>
+                </div>
+            </div>
+            
+            <!-- Net Banking Form -->
+            <div class="payment-form" id="netbankingForm">
+                <h3>Net Banking</h3>
+                <div class="netbanking-form">
+                    <p>Select your bank to proceed with Net Banking</p>
+                    <div class="bank-list">
+                        <div class="bank-option" data-bank="sbi" onclick="selectBankDirect(this)">SBI</div>
+                        <div class="bank-option" data-bank="hdfc" onclick="selectBankDirect(this)">HDFC</div>
+                        <div class="bank-option" data-bank="icici" onclick="selectBankDirect(this)">ICICI</div>
+                        <div class="bank-option" data-bank="axis" onclick="selectBankDirect(this)">Axis</div>
+                        <div class="bank-option" data-bank="kotak" onclick="selectBankDirect(this)">Kotak</div>
+                        <div class="bank-option" data-bank="pnb" onclick="selectBankDirect(this)">PNB</div>
+                        <div class="bank-option" data-bank="bob" onclick="selectBankDirect(this)">BOB</div>
+                        <div class="bank-option" data-bank="idbi" onclick="selectBankDirect(this)">IDBI</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Wallet Form -->
+            <div class="payment-form" id="walletForm">
+                <h3>Wallet Payment</h3>
+                <div class="wallet-form">
+                    <p>Select your preferred wallet</p>
+                    <div class="wallet-options">
+                        <div class="wallet-option" data-wallet="paytm">Paytm</div>
+                        <div class="wallet-option" data-wallet="phonepe">PhonePe</div>
+                        <div class="wallet-option" data-wallet="amazonpay">Amazon Pay</div>
+                        <div class="wallet-option" data-wallet="mobikwik">MobiKwik</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="payment-success" id="paymentSuccess">
+                <div class="success-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <h3>Payment Successful!</h3>
+                <p>Your booking has been confirmed. You will receive an email confirmation shortly.</p>
+                <div class="mt-4">
+                    <a href="/" class="action-btn primary-btn">Back to Home</a>
+                </div>
+            </div>
+            
+            <div class="button-group" id="paymentButtons">
+                <button class="action-btn secondary-btn" id="backButton">Back to Booking</button>
+                <button class="action-btn primary-btn" id="payButton" onclick="directPayment()" disabled>Pay ₹<span id="buttonAmount">0</span></button>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <div class="container">
+            <p>&copy; 2023 BusBooker. All rights reserved.</p>
+        </div>
+    </footer>
+    
+    <script th:src="@{/js/common.js}"></script>
+    <script th:src="@{/js/auth.js}"></script>
+    <script th:inline="javascript">
+        // Get bookingId from the model
+        const bookingId = /*[[${bookingId}]]*/ null;
+        
+        // Function to select a bank directly
+        function selectBankDirect(bankElement) {
+            console.log('Bank selected directly:', bankElement.dataset.bank);
+            
+            // Remove selected class from all banks
+            document.querySelectorAll('.bank-option').forEach(bank => {
+                bank.classList.remove('selected');
+            });
+            
+            // Add selected class to this bank
+            bankElement.classList.add('selected');
+            
+            // Enable the pay button
+            document.getElementById('payButton').disabled = false;
+            
+            // Log to debug
+            addDebugLog('Bank selected: ' + bankElement.dataset.bank);
+        }
+        
+        // Function to add to debug log
+        function addDebugLog(message) {
+            const debugLog = document.getElementById('debugLog');
+            if (debugLog) {
+                const now = new Date();
+                const timestamp = now.toTimeString().split(' ')[0];
+                const logItem = document.createElement('div');
+                logItem.innerHTML = `<span style="color: #999;">[${timestamp}]</span> ${message}`;
+                debugLog.appendChild(logItem);
+                debugLog.scrollTop = debugLog.scrollHeight;
+            }
+        }
+        
+        // Update directPayment to log to debug panel
+        function directPayment() {
+            console.log('Direct payment button clicked');
+            addDebugLog('Direct payment initiated');
+            
+            const token = localStorage.getItem('authToken');
+            const user = JSON.parse(localStorage.getItem('user') || '{}');
+            
+            if (!token || !user.id) {
+                addDebugLog('ERROR: No auth token found');
+                alert('No auth token found. Please login first.');
+                window.location.href = '/login?redirect=' + window.location.pathname;
+                return;
+            }
+            
+            addDebugLog('Authentication valid: ' + user.username);
+            
+            // Show immediate feedback
+            document.getElementById('payButton').textContent = 'Processing...';
+            document.getElementById('payButton').disabled = true;
+            
+            // Update debug status
+            const debugStatus = document.getElementById('debugPaymentStatus');
+            if (debugStatus) {
+                debugStatus.innerHTML = '<strong>Payment Status:</strong> PROCESSING...';
+            }
+            
+            // Simulate a successful payment
+            addDebugLog('Payment processing...');
+            setTimeout(function() {
+                // Hide any payment forms and methods
+                const forms = document.querySelectorAll('.payment-form');
+                forms.forEach(form => form.style.display = 'none');
+                
+                const methods = document.querySelector('.payment-methods');
+                if (methods) methods.style.display = 'none';
+                
+                // Hide buttons
+                document.getElementById('paymentButtons').style.display = 'none';
+                
+                // Update debug status
+                if (debugStatus) {
+                    debugStatus.innerHTML = '<strong>Payment Status:</strong> SUCCESS';
+                    debugStatus.style.color = 'green';
+                }
+                
+                addDebugLog('Payment successful!');
+                
+                // Show success message
+                const success = document.getElementById('paymentSuccess');
+                if (success) {
+                    success.style.display = 'block';
+                    success.scrollIntoView({ behavior: 'smooth' });
+                }
+            }, 2000);
+        }
+        
+        // Debug function
+        function toggleDebug() {
+            const debugSection = document.getElementById('debugInfo');
+            if (debugSection.style.display === 'none') {
+                debugSection.style.display = 'block';
+                // Populate debug info
+                const token = localStorage.getItem('authToken');
+                document.getElementById('debugToken').innerHTML = `<strong>Token:</strong> ${token ? token.substring(0, 20) + '...' : 'No token'}</br>`;
+                
+                const user = JSON.parse(localStorage.getItem('user') || '{}');
+                document.getElementById('debugUser').innerHTML = `<strong>User:</strong> ${JSON.stringify(user)}</br>`;
+                
+                document.getElementById('debugBookingId').innerHTML = `<strong>Booking ID:</strong> ${bookingId || 'Not set'}</br>`;
+                
+                // Add a direct payment button for debugging
+                const debugPayBtn = document.createElement('button');
+                debugPayBtn.textContent = 'Direct Payment (Debug)';
+                debugPayBtn.style.marginTop = '10px';
+                debugPayBtn.style.marginRight = '10px';
+                debugPayBtn.onclick = directPayment;
+                debugSection.appendChild(debugPayBtn);
+            } else {
+                debugSection.style.display = 'none';
+            }
+        }
+    </script>
+    <script th:src="@{/js/payment.js}"></script>
+</body>
+</html> 

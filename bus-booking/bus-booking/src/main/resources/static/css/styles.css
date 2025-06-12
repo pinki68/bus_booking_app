@@ -1,0 +1,328 @@
+/* General Styles */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f8f9fa;
+    color: #333;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Header Styles */
+header {
+    background-color: #1a237e;
+    color: white;
+    padding: 15px 0;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+}
+
+.logo {
+    font-size: 24px;
+    font-weight: bold;
+    color: white;
+    text-decoration: none;
+}
+
+.nav-links {
+    display: flex;
+    list-style: none;
+    align-items: center;
+}
+
+.nav-links li {
+    margin-left: 20px;
+}
+
+.nav-links a {
+    color: white;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.nav-links a:hover {
+    color: #c5cae9;
+}
+
+/* User info styles */
+.user-info {
+    display: flex;
+    align-items: center;
+    margin-left: 20px;
+}
+
+.user-info li {
+    margin-left: 15px;
+}
+
+.auth-buttons {
+    display: flex;
+    align-items: center;
+}
+
+/* Form Styles */
+.form-container {
+    max-width: 500px;
+    margin: 50px auto;
+    background-color: white;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+}
+
+.form-title {
+    text-align: center;
+    color: #1a237e;
+    margin-bottom: 30px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+.form-control {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+    transition: border-color 0.3s;
+}
+
+.form-control:focus {
+    border-color: #1a237e;
+    outline: none;
+}
+
+.btn {
+    display: inline-block;
+    padding: 12px 24px;
+    background-color: #1a237e;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 500;
+    transition: background-color 0.3s;
+}
+
+.btn:hover {
+    background-color: #3949ab;
+}
+
+.btn-block {
+    width: 100%;
+}
+
+/* Validation */
+.error-message {
+    color: #d32f2f;
+    font-size: 14px;
+    margin-top: 5px;
+}
+
+.success-message {
+    color: #388e3c;
+    font-size: 14px;
+    margin-top: 5px;
+}
+
+.form-control.invalid {
+    border-color: #d32f2f;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .form-container {
+        padding: 20px;
+        margin: 30px 15px;
+    }
+    
+    .navbar {
+        flex-direction: column;
+        padding: 15px;
+    }
+    
+    .nav-links {
+        margin-top: 15px;
+    }
+}
+
+/* Styles for local bookings */
+.local-booking {
+    position: relative;
+    border-left: 4px solid #fbbc04 !important;
+}
+
+.local-booking::after {
+    content: 'Local';
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: #fbbc04;
+    color: #fff;
+    font-size: 12px;
+    padding: 3px 8px;
+    border-radius: 10px;
+}
+
+/* Booking details styling */
+.booking-card {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    padding: 20px;
+    border-left: 4px solid #4285f4;
+}
+
+.booking-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #eee;
+}
+
+.booking-status {
+    display: inline-block;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.status-confirmed {
+    background-color: #e6f4ea;
+    color: #34a853;
+}
+
+.status-pending {
+    background-color: #fff8e1;
+    color: #fbbc04;
+}
+
+.status-cancelled {
+    background-color: #fce8e6;
+    color: #ea4335;
+}
+
+.booking-details {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.bus-details, .booking-info {
+    flex: 1;
+    min-width: 250px;
+}
+
+.detail-row {
+    display: flex;
+    margin-bottom: 8px;
+}
+
+.detail-label {
+    width: 120px;
+    font-weight: bold;
+    color: #666;
+}
+
+.booking-passengers {
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid #eee;
+}
+
+.passengers-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.passenger-item {
+    background-color: #f8f9fa;
+    padding: 12px;
+    border-radius: 6px;
+    width: calc(50% - 10px);
+    box-sizing: border-box;
+}
+
+.passenger-name {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.passenger-seat {
+    margin-top: 5px;
+    font-size: 0.9em;
+    color: #4285f4;
+}
+
+.booking-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid #eee;
+}
+
+.action-btn {
+    padding: 8px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.3s;
+}
+
+.cancel-btn {
+    background-color: #fce8e6;
+    color: #ea4335;
+}
+
+.cancel-btn:hover {
+    background-color: #fadbd9;
+}
+
+.eticket-btn {
+    background-color: #e8f0fe;
+    color: #4285f4;
+}
+
+.eticket-btn:hover {
+    background-color: #d2e3fc;
+}
+
+/* Media queries for responsiveness */
+@media (max-width: 768px) {
+    .booking-details {
+        flex-direction: column;
+    }
+    
+    .passenger-item {
+        width: 100%;
+    }
+} 

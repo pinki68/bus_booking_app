@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buses - Bus Booking System</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <style>
+        .page-header {
+            background-color: #1a237e;
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .page-header h1 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+        
+        .filters-section {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .filters-section h2 {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            color: #1a237e;
+        }
+        
+        .filter-form {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .filter-group {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .filter-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        .filter-control {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+        
+        .filter-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .apply-btn {
+            padding: 10px 20px;
+            background-color: #1a237e;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+        
+        .apply-btn:hover {
+            background-color: #303f9f;
+        }
+        
+        .reset-btn {
+            padding: 10px 20px;
+            background-color: #f5f5f5;
+            color: #333;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+        
+        .reset-btn:hover {
+            background-color: #e0e0e0;
+        }
+        
+        .sorting-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .sort-by {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .sort-by label {
+            font-weight: bold;
+        }
+        
+        .sort-by select {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        
+        .result-count {
+            font-weight: bold;
+        }
+        
+        .bus-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .bus-card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .bus-info {
+            flex: 2;
+            min-width: 250px;
+        }
+        
+        .bus-info h3 {
+            color: #1a237e;
+            margin-bottom: 10px;
+        }
+        
+        .bus-info .bus-type {
+            display: inline-block;
+            padding: 5px 10px;
+            background-color: #e8eaf6;
+            color: #1a237e;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            margin-left: 10px;
+        }
+        
+        .bus-time {
+            flex: 1;
+            min-width: 200px;
+            text-align: center;
+        }
+        
+        .bus-time p {
+            margin: 5px 0;
+        }
+        
+        .bus-price {
+            flex: 1;
+            min-width: 150px;
+            text-align: right;
+        }
+        
+        .bus-price h3 {
+            margin-bottom: 10px;
+            color: #4caf50;
+        }
+        
+        .book-btn {
+            padding: 10px 15px;
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: background-color 0.3s;
+        }
+        
+        .book-btn:hover {
+            background-color: #388e3c;
+        }
+        
+        .amenities {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .amenity {
+            font-size: 0.8rem;
+            padding: 3px 8px;
+            background-color: #f5f5f5;
+            border-radius: 12px;
+        }
+        
+        .no-results {
+            text-align: center;
+            padding: 40px 20px;
+            font-size: 1.2rem;
+            color: #666;
+        }
+        
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 30px;
+        }
+        
+        .page-btn {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            background-color: white;
+            transition: background-color 0.3s;
+        }
+        
+        .page-btn:hover {
+            background-color: #f5f5f5;
+        }
+        
+        .page-btn.active {
+            background-color: #1a237e;
+            color: white;
+            border-color: #1a237e;
+        }
+        
+        @media (max-width: 768px) {
+            .bus-card {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .bus-time, .bus-price {
+                text-align: center;
+                margin-top: 15px;
+            }
+            
+            .filter-form {
+                flex-direction: column;
+            }
+            
+            .sorting-options {
+                flex-direction: column;
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="navbar">
+            <a href="/" class="logo">BusBooker</a>
+            <ul class="nav-links">
+                <li><a href="/">Home</a></li>
+                <li><a href="/buses" class="active">Buses</a></li>
+                <li><a href="/bookings">My Bookings</a></li>
+                <div class="auth-buttons">
+                    <li><a href="/login">Login</a></li>
+                    <li><a href="/register">Register</a></li>
+                </div>
+                <div class="user-info" style="display: none;">
+                    <li>Welcome, <span id="userUsername"></span></li>
+                    <li><a href="#" id="logoutButton">Logout</a></li>
+                </div>
+            </ul>
+        </div>
+    </header>
+    
+    <div class="page-header">
+        <h1>Browse Available Buses</h1>
+        <p>Find and book buses to your destination</p>
+    </div>
+    
+    <div class="container">
+        <div class="filters-section" id="filtersSection" style="display: block !important;">
+            <h2>Filter Buses</h2>
+            <!-- Debug helper -->
+            <div id="debugHelper" style="margin-bottom: 10px; padding: 5px; background-color: #f8d7da; display: none;">
+                <p style="margin: 0; font-size: 14px;">If filter form is not visible, <a href="#" onclick="forceShowFilters(); return false;">click here</a> to force display.</p>
+            </div>
+            <form id="filterForm" class="filter-form" onsubmit="return false;">
+                <div class="filter-group">
+                    <label for="sourceFilter">From</label>
+                    <input type="text" id="sourceFilter" class="filter-control" placeholder="Source city">
+                </div>
+                <div class="filter-group">
+                    <label for="destinationFilter">To</label>
+                    <input type="text" id="destinationFilter" class="filter-control" placeholder="Destination city">
+                </div>
+                <div class="filter-group">
+                    <label for="dateFilter">Date</label>
+                    <input type="date" id="dateFilter" class="filter-control">
+                    <small style="color: #666; font-style: italic;">Note: Date filter is for display only in this demo</small>
+                </div>
+                <div class="filter-group">
+                    <label for="busTypeFilter">Bus Type</label>
+                    <select id="busTypeFilter" class="filter-control">
+                        <option value="">All Types</option>
+                        <option value="AC Sleeper">AC Sleeper</option>
+                        <option value="Non-AC Sleeper">Non-AC Sleeper</option>
+                        <option value="AC Seater">AC Seater</option>
+                        <option value="Non-AC Seater">Non-AC Seater</option>
+                        <option value="Volvo">Volvo</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="priceFilter">Max Price</label>
+                    <input type="range" id="priceFilter" class="filter-control" min="100" max="3000" step="100" value="3000">
+                    <output for="priceFilter" id="priceOutput">₹3000</output>
+                </div>
+                <div class="filter-group">
+                    <label for="timeFilter">Departure Time</label>
+                    <select id="timeFilter" class="filter-control">
+                        <option value="">Any Time</option>
+                        <option value="morning">Morning (5 AM - 12 PM)</option>
+                        <option value="afternoon">Afternoon (12 PM - 4 PM)</option>
+                        <option value="evening">Evening (4 PM - 9 PM)</option>
+                        <option value="night">Night (9 PM - 5 AM)</option>
+                    </select>
+                </div>
+            </form>
+            <div class="filter-buttons">
+                <button id="applyFilters" class="apply-btn" onclick="applyFilters()">Apply Filters</button>
+                <button id="resetFilters" class="reset-btn" onclick="resetFilters()">Reset Filters</button>
+            </div>
+        </div>
+        
+        <div class="sorting-options">
+            <div class="result-count">
+                <span id="busCount">0</span> buses found
+            </div>
+            <div class="sort-by">
+                <label for="sortOption">Sort by:</label>
+                <select id="sortOption">
+                    <option value="price_asc">Price: Low to High</option>
+                    <option value="price_desc">Price: High to Low</option>
+                    <option value="departure_asc">Departure: Earliest First</option>
+                    <option value="departure_desc">Departure: Latest First</option>
+                    <option value="duration_asc">Duration: Shortest First</option>
+                </select>
+            </div>
+        </div>
+        
+        <div id="busList" class="bus-list">
+            <div class="loading">Loading buses...</div>
+        </div>
+        
+        <!-- Error message section -->
+        <div id="errorMessage" class="alert alert-danger" style="display: none; margin: 15px 0;">
+            <i class="fas fa-exclamation-circle me-2"></i> 
+            <span id="errorText">We encountered an error while loading buses. Please try again.</span>
+            <button class="btn btn-sm btn-outline-danger ms-3" onclick="loadBuses()">Retry</button>
+        </div>
+        
+        <div id="pagination" class="pagination">
+            <!-- Pagination will be added dynamically -->
+        </div>
+    </div>
+    
+    <footer>
+        <div class="container">
+            <p>&copy; 2023 BusBooker. All rights reserved.</p>
+        </div>
+    </footer>
+    
+    <!-- Scripts with versioning to prevent caching issues -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script th:src="@{/js/common.js?v=2}" onerror="this.onerror=null;this.src='/js/common.js?v=2';"></script>
+    <script th:src="@{/js/auth.js?v=2}" onerror="this.onerror=null;this.src='/js/auth.js?v=2';"></script>
+    <script th:src="@{/js/buses.js?v=2}" onerror="this.onerror=null;this.src='/js/buses.js?v=2';"></script>
+    
+    <script>
+        // Immediate execution to process URL parameters
+        (function() {
+            console.log('[INLINE] Direct URL parameters processing script executing');
+            console.log('[INLINE] Current URL:', window.location.href);
+            console.log('[INLINE] Search params:', window.location.search);
+            
+            try {
+                // Parse URL parameters manually
+                const urlParams = new URLSearchParams(window.location.search);
+                const source = urlParams.get('source');
+                const destination = urlParams.get('destination');
+                const date = urlParams.get('date');
+                
+                console.log('[INLINE] Direct URL parameters extraction:', { source, destination, date });
+                
+                // Store parameters for buses.js to use
+                window.searchParams = { source, destination, date };
+                
+                // Directly populate filter fields if they exist
+                document.addEventListener('DOMContentLoaded', function() {
+                    console.log('[INLINE] DOM loaded, populating filter fields');
+                    
+                    // Get filter elements
+                    const sourceFilter = document.getElementById('sourceFilter');
+                    const destinationFilter = document.getElementById('destinationFilter');
+                    const dateFilter = document.getElementById('dateFilter');
+                    
+                    // Populate filter fields if they exist and have values
+                    if (sourceFilter && source) {
+                        console.log('[INLINE] Setting sourceFilter to:', source);
+                        sourceFilter.value = source;
+                    }
+                    
+                    if (destinationFilter && destination) {
+                        console.log('[INLINE] Setting destinationFilter to:', destination);
+                        destinationFilter.value = destination;
+                    }
+                    
+                    if (dateFilter && date) {
+                        console.log('[INLINE] Setting dateFilter to:', date);
+                        dateFilter.value = date;
+                    }
+                    
+                    // Force filter application after a delay to ensure buses are loaded
+                    if ((source || destination || date) && document.getElementById('applyFilters')) {
+                        console.log('[INLINE] Scheduling filter application');
+                        setTimeout(function() {
+                            console.log('[INLINE] Applying filters');
+                            const applyBtn = document.getElementById('applyFilters');
+                            if (applyBtn) {
+                                applyBtn.click();
+                            }
+                        }, 1500);
+                    }
+                });
+            } catch (error) {
+                console.error('[INLINE] Error processing URL parameters:', error);
+            }
+        })();
+    </script>
+</body>
+</html> 

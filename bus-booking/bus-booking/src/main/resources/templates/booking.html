@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Tickets - Bus Booking System</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/styles.css}" onerror="this.onerror=null;this.href='/resources/css/styles.css';">
+    <style>
+        /* Booking form specific styles */
+        .booking-container {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 30px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .bus-details {
+            background-color: #f5f5f5;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+        
+        .bus-details h3 {
+            color: #1a237e;
+            margin-top: 0;
+        }
+        
+        .detail-row {
+            display: flex;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+        
+        .detail-item {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .detail-item strong {
+            color: #333;
+        }
+        
+        .fare-box {
+            background-color: #e3f2fd;
+            padding: 15px;
+            border-radius: 4px;
+            text-align: center;
+        }
+        
+        .fare-box h3 {
+            margin: 0;
+            color: #1a237e;
+        }
+        
+        .passenger-form {
+            margin-bottom: 30px;
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #4caf50;
+        }
+        
+        .passenger-list {
+            margin-top: 20px;
+        }
+        
+        .passenger-card {
+            background-color: #f5f5f5;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            position: relative;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .passenger-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+        
+        .remove-passenger {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            color: #f44336;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
+        }
+        
+        .seat-selector {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .seat {
+            padding: 8px;
+            background-color: #e8f5e9;
+            border: 1px solid #c8e6c9;
+            border-radius: 4px;
+            text-align: center;
+            cursor: pointer;
+            user-select: none;
+            transition: all 0.2s ease;
+        }
+        
+        .seat:hover {
+            transform: scale(1.05);
+        }
+        
+        .seat.selected {
+            background-color: #4caf50;
+            color: white;
+            border-color: #388e3c;
+            box-shadow: 0 0 0 2px #4caf50;
+        }
+        
+        .seat.booked {
+            background-color: #ffcdd2;
+            color: #d32f2f;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+        
+        .button-group {
+            margin-top: 20px;
+            display: flex;
+            gap: 15px;
+        }
+        
+        .action-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+        
+        .action-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .action-btn:active {
+            transform: translateY(1px);
+        }
+        
+        .primary-btn {
+            background-color: #4caf50;
+            color: white;
+        }
+        
+        .primary-btn:hover {
+            background-color: #388e3c;
+        }
+        
+        .secondary-btn {
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        
+        .secondary-btn:hover {
+            background-color: #e0e0e0;
+        }
+        
+        .form-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .form-group {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+        
+        .form-control:focus {
+            border-color: #4caf50;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.25);
+        }
+        
+        .form-control.is-invalid {
+            border-color: #dc3545;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' width='12' height='12' fill='none' stroke='%23dc3545'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath stroke-linejoin='round' d='M5.8 3.6h.4L6 6.5z'/%3e%3ccircle cx='6' cy='8.2' r='.6' fill='%23dc3545' stroke='none'/%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 24px 24px;
+            padding-right: 44px;
+        }
+        
+        .booking-summary {
+            background-color: #f5f5f5;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 30px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            border-left: 4px solid #1a237e;
+        }
+        
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding: 5px 0;
+            border-bottom: 1px dashed #ddd;
+        }
+        
+        .total-row {
+            font-weight: bold;
+            font-size: 1.2rem;
+            border-top: 2px solid #ddd;
+            border-bottom: none;
+            padding-top: 10px;
+            margin-top: 10px;
+            color: #1a237e;
+        }
+        
+        /* Seat map styles */
+        .seat-map-container {
+            margin: 20px 0;
+            overflow-x: auto;
+            padding: 10px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        
+        .bus-layout {
+            display: inline-block;
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            min-width: 300px;
+            border: 1px solid #e0e0e0;
+        }
+        
+        .driver-cabin {
+            background: #d1e7dd;
+            width: 60px;
+            height: 60px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            border: 1px solid #a3cfbb;
+            position: relative;
+        }
+        
+        .driver-cabin:after {
+            content: '🚌';
+            position: absolute;
+            font-size: 1.5rem;
+        }
+        
+        .seat-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        
+        .seat {
+            width: 40px;
+            height: 40px;
+            margin: 3px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+        
+        .seat.available {
+            background-color: #e8f5e9;
+            border: 1px solid #c8e6c9;
+        }
+        
+        .seat.selected {
+            background-color: #4caf50;
+            color: white;
+            border: 1px solid #2e7d32;
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.7);
+            }
+            70% {
+                box-shadow: 0 0 0 5px rgba(76, 175, 80, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(76, 175, 80, 0);
+            }
+        }
+        
+        .seat.booked {
+            background-color: #ffcdd2;
+            color: #d32f2f;
+            border: 1px solid #e57373;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+        
+        .aisle {
+            width: 20px;
+        }
+        
+        /* Legend for seat map */
+        .seat-map-legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 15px;
+            justify-content: center;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.9rem;
+        }
+        
+        .legend-item .seat {
+            width: 20px;
+            height: 20px;
+            font-size: 0.6rem;
+            margin: 0;
+        }
+        
+        /* Animation for the success message */
+        .alert-success {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Animation for the error message */
+        .alert-danger {
+            animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+        }
+        
+        @keyframes shake {
+            10%, 90% {
+                transform: translate3d(-1px, 0, 0);
+            }
+            
+            20%, 80% {
+                transform: translate3d(2px, 0, 0);
+            }
+            
+            30%, 50%, 70% {
+                transform: translate3d(-4px, 0, 0);
+            }
+            
+            40%, 60% {
+                transform: translate3d(4px, 0, 0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="navbar">
+            <a href="/" class="logo">BusBooker</a>
+            <ul class="nav-links">
+                <li><a href="/">Home</a></li>
+                <li><a href="/buses">Buses</a></li>
+                <li><a href="/bookings">My Bookings</a></li>
+                <div class="auth-buttons">
+                    <li><a href="/login">Login</a></li>
+                    <li><a href="/register">Register</a></li>
+                </div>
+                <div class="user-info" style="display: none;">
+                    <li>Welcome, <span id="userUsername"></span></li>
+                    <li><a href="#" id="logoutButton">Logout</a></li>
+                </div>
+            </ul>
+        </div>
+    </header>
+    
+    <div class="container">
+        <div class="booking-container">
+            <h2><i class="fas fa-ticket-alt"></i> Book Your Tickets</h2>
+            
+            <!-- Bus details will be populated here -->
+            <div id="busDetailsContainer">
+                <div class="text-center">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p>Loading bus details...</p>
+                </div>
+            </div>
+            
+            <!-- Booking form (initially hidden) -->
+            <div id="bookingForm" class="d-none">
+                <!-- Contact Information Section -->
+                <div class="contact-form mt-4">
+                    <h3><i class="fas fa-address-card"></i> Contact Information</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="contactEmail"><i class="fas fa-envelope"></i> Email</label>
+                            <input type="email" id="contactEmail" class="form-control" placeholder="Enter your email address" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="contactPhone"><i class="fas fa-phone"></i> Phone Number</label>
+                            <input type="tel" id="contactPhone" class="form-control" placeholder="Enter your phone number" required>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="passenger-form mt-4">
+                    <h3><i class="fas fa-user-plus"></i> Passenger Details</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="passengerName"><i class="fas fa-user"></i> Full Name</label>
+                            <input type="text" id="passengerName" class="form-control" placeholder="Enter passenger's full name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="passengerAge"><i class="fas fa-birthday-cake"></i> Age</label>
+                            <input type="number" id="passengerAge" class="form-control" placeholder="Age" min="1" max="120" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="passengerGender"><i class="fas fa-venus-mars"></i> Gender</label>
+                            <select id="passengerGender" class="form-control" required>
+                                <option value="">Select Gender</option>
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <!-- New section: Document Information -->
+                    <div class="form-row mt-3">
+                        <div class="form-group">
+                            <label for="documentType"><i class="fas fa-id-card"></i> ID Document Type</label>
+                            <select id="documentType" class="form-control">
+                                <option value="">Select Document Type</option>
+                                <option value="Passport">Passport</option>
+                                <option value="National ID">National ID</option>
+                                <option value="Driver License">Driver License</option>
+                                <option value="Other">Other Document</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="documentNumber"><i class="fas fa-fingerprint"></i> Document Number</label>
+                            <input type="text" id="documentNumber" class="form-control" placeholder="Enter document number">
+                        </div>
+                    </div>
+                    
+                    <!-- New section: Seat Preferences -->
+                    <div class="form-row mt-3">
+                        <div class="form-group">
+                            <label><i class="fas fa-sliders-h"></i> Seat Preferences</label>
+                            <div class="d-flex flex-wrap gap-2">
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" id="prefWindow" value="window">
+                                    <label class="form-check-label" for="prefWindow">Window</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" id="prefAisle" value="aisle">
+                                    <label class="form-check-label" for="prefAisle">Aisle</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" id="prefFront" value="front">
+                                    <label class="form-check-label" for="prefFront">Front</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" id="prefBack" value="back">
+                                    <label class="form-check-label" for="prefBack">Back</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- New section: Special Requests -->
+                    <div class="form-row mt-3">
+                        <div class="form-group">
+                            <label for="specialRequests"><i class="fas fa-clipboard-list"></i> Special Requests</label>
+                            <textarea id="specialRequests" class="form-control" rows="2" placeholder="Enter any special requests or requirements"></textarea>
+                        </div>
+                    </div>
+                    
+                    <!-- Visual seat map -->
+                    <h4 class="mt-4"><i class="fas fa-chair"></i> Select a Seat</h4>
+                    <div class="seat-map-legend">
+                        <div class="legend-item">
+                            <div class="seat available"></div>
+                            <span>Available</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="seat selected"></div>
+                            <span>Selected</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="seat booked"></div>
+                            <span>Booked</span>
+                        </div>
+                    </div>
+                    <div class="seat-map-container" id="seatMapContainer">
+                        <!-- Seat map will be dynamically generated here -->
+                    </div>
+                    
+                    <div class="form-row mt-3">
+                        <div class="form-group">
+                            <label for="seatNumber"><i class="fas fa-couch"></i> Seat Number</label>
+                            <select id="seatNumber" class="form-control" required>
+                                <option value="">Select Seat</option>
+                                <!-- Seats will be populated by JavaScript -->
+                            </select>
+                            <small class="text-muted">Or click directly on the seat map above</small>
+                        </div>
+                        <div class="form-group" style="display: flex; align-items: flex-end;">
+                            <button id="addPassengerBtn" class="btn btn-success btn-lg w-100">
+                                <i class="fas fa-plus-circle"></i> Add Passenger
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Hidden field for price -->
+                    <input type="hidden" id="pricePerSeat" value="0">
+                </div>
+                
+                <div class="passenger-list" id="passengerList">
+                    <h3><i class="fas fa-users"></i> Added Passengers</h3>
+                    <div id="noPassengersMessage" class="alert alert-info">
+                        <i class="fas fa-info-circle"></i> No passengers added yet. Please add at least one passenger.
+                    </div>
+                    <!-- Passenger cards will be added here dynamically -->
+                </div>
+                
+                <div class="booking-summary" id="bookingSummary" style="display: none;">
+                    <h3><i class="fas fa-receipt"></i> Booking Summary</h3>
+                    <div class="summary-row">
+                        <span><i class="fas fa-chair"></i> Number of Seats:</span>
+                        <span id="totalSeats">0</span>
+                    </div>
+                    <div class="summary-row">
+                        <span><i class="fas fa-tag"></i> Fare per Seat:</span>
+                        <span>$<span id="perSeatFare">0</span></span>
+                    </div>
+                    <div class="summary-row total-row">
+                        <span><i class="fas fa-dollar-sign"></i> Total Amount:</span>
+                        <span>$<span id="totalFare">0</span></span>
+                    </div>
+                </div>
+                
+                <div class="button-group">
+                    <button id="cancelBtn" class="btn btn-outline-secondary btn-lg">
+                        <i class="fas fa-times-circle"></i> Cancel
+                    </button>
+                    <button id="proceedBtn" class="btn btn-primary btn-lg" disabled>
+                        <i class="fas fa-arrow-right"></i> Proceed to Payment
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Error message display -->
+            <div id="errorMessage" class="alert alert-danger mt-3" style="display: none;"></div>
+        </div>
+    </div>
+    
+    <footer>
+        <div class="container">
+            <p>&copy; 2023 BusBooker. All rights reserved.</p>
+        </div>
+    </footer>
+    
+    <!-- Load scripts in correct order -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script th:src="@{/js/common.js?v=1}" onerror="this.onerror=null;this.src='/resources/js/common.js';"></script>
+    <script th:src="@{/js/auth.js?v=1}" onerror="this.onerror=null;this.src='/resources/js/auth.js';"></script>
+    <script th:src="@{/js/booking.js?v=1}" onerror="this.onerror=null;this.src='/resources/js/booking.js';"></script>
+    
+    <!-- Debug script for resource loading -->
+    <script th:src="@{/js/booking-debug.js?v=1}" onerror="this.onerror=null;this.src='/resources/js/booking-debug.js';"></script>
+    
+    <!-- Debug script for console logging -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('All scripts loaded. Beginning initialization...');
+            console.log('Auth token present:', localStorage.getItem('authToken') ? 'Yes' : 'No');
+            
+            // Debug script loading
+            const scripts = document.querySelectorAll('script');
+            scripts.forEach(script => {
+                if (script.src) {
+                    console.log('Script loaded:', script.src);
+                    
+                    // Create a test request to the script to check if it loads properly
+                    const testFetch = fetch(script.src)
+                        .then(response => {
+                            console.log('Script fetch status:', script.src, response.status, response.ok ? 'OK' : 'FAILED');
+                        })
+                        .catch(error => {
+                            console.error('Script fetch error:', script.src, error);
+                        });
+                }
+            });
+            
+            // Debug CSS loading
+            const links = document.querySelectorAll('link[rel="stylesheet"]');
+            links.forEach(link => {
+                if (link.href) {
+                    console.log('Stylesheet loaded:', link.href);
+                    
+                    // Create a test request to the stylesheet to check if it loads properly
+                    const testFetch = fetch(link.href)
+                        .then(response => {
+                            console.log('Stylesheet fetch status:', link.href, response.status, response.ok ? 'OK' : 'FAILED');
+                        })
+                        .catch(error => {
+                            console.error('Stylesheet fetch error:', link.href, error);
+                        });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

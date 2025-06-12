@@ -1,0 +1,155 @@
+/**
+ * Booking Form CSS
+ * Styles for the bus booking form
+ */
+
+/* Legend boxes for seat map */
+.legend-box {
+    width: 20px;
+    height: 20px;
+    border-radius: 4px;
+}
+
+.legend-box.available {
+    background-color: #e8f0fe;
+    border: 1px solid #ddd;
+}
+
+.legend-box.selected {
+    background-color: #4285f4;
+    border: 1px solid #2b579a;
+}
+
+.legend-box.booked {
+    background-color: #f5f5f5;
+    border: 1px solid #ddd;
+}
+
+/* Preference tags */
+.preference-tag {
+    display: inline-block;
+    background-color: #e8f0fe;
+    color: #4285f4;
+    padding: 3px 8px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    margin-right: 5px;
+    margin-bottom: 5px;
+}
+
+/* Special request styling */
+.special-request {
+    background-color: #fef8e8;
+    padding: 8px 12px;
+    border-radius: 4px;
+    margin-top: 8px;
+    border-left: 3px solid #fbbc04;
+    font-size: 0.9rem;
+}
+
+/* Bus details card */
+.bus-details.card {
+    border-left: 4px solid #4285f4;
+    transition: all 0.3s ease;
+}
+
+.bus-details.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Price styling */
+.price {
+    color: #34a853;
+    font-size: 1.1rem;
+}
+
+/* Confirmation modal styling */
+.booking-confirmation .journey-details,
+.booking-confirmation .passenger-details,
+.booking-confirmation .contact-details,
+.booking-confirmation .price-details {
+    background-color: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.booking-confirmation h5.text-primary {
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 1.1rem;
+}
+
+.passenger-item {
+    padding: 10px 0;
+}
+
+.passenger-item:last-child {
+    border-bottom: none !important;
+}
+
+/* Form section animations */
+.form-section {
+    transition: all 0.3s ease;
+}
+
+.form-section:hover {
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+}
+
+/* Steps styling */
+.progress-steps::before {
+    content: '';
+    position: absolute;
+    top: 15px;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(to right, 
+        #4285f4 0%, 
+        #4285f4 calc(100% * 0.25), 
+        #e0e0e0 calc(100% * 0.25), 
+        #e0e0e0 100%);
+    z-index: 1;
+    transition: background 0.3s;
+}
+
+/* Progress step transitions */
+.step-icon {
+    transition: all 0.3s ease;
+}
+
+.step.active .step-icon, 
+.step.completed .step-icon {
+    transform: scale(1.1);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .booking-container {
+        margin: 20px auto;
+        padding: 15px;
+    }
+    
+    .step-label {
+        font-size: 12px;
+    }
+    
+    .seat-map {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 5px;
+    }
+    
+    .seat {
+        padding: 8px 5px;
+        font-size: 0.8rem;
+    }
+}
+
+/* Loading spinner */
+.spinner-border {
+    margin: 0 auto;
+    width: 2rem;
+    height: 2rem;
+} 

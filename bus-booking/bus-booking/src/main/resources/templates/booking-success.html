@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking Successful - Bus Booking System</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <style>
+        .success-container {
+            max-width: 800px;
+            margin: 60px auto;
+            padding: 40px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        
+        .success-icon {
+            font-size: 80px;
+            color: #4caf50;
+            margin-bottom: 20px;
+        }
+        
+        .booking-details {
+            margin-top: 40px;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            text-align: left;
+        }
+        
+        .booking-details h4 {
+            color: #1a237e;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding-bottom: 5px;
+            border-bottom: 1px dashed #e0e0e0;
+        }
+        
+        .button-row {
+            margin-top: 30px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+        
+        .btn-primary {
+            background-color: #1a237e;
+            border-color: #1a237e;
+        }
+        
+        .btn-primary:hover {
+            background-color: #303f9f;
+            border-color: #303f9f;
+        }
+        
+        .btn-success {
+            background-color: #4caf50;
+            border-color: #4caf50;
+        }
+        
+        .btn-success:hover {
+            background-color: #388e3c;
+            border-color: #388e3c;
+        }
+        
+        .ticket-number {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #1a237e;
+            padding: 10px;
+            background-color: #e8eaf6;
+            border-radius: 5px;
+            margin: 20px 0;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="navbar">
+            <a href="/" class="logo">BusBooker</a>
+            <ul class="nav-links">
+                <li><a href="/">Home</a></li>
+                <li><a href="/buses">Buses</a></li>
+                <li><a href="/bookings">My Bookings</a></li>
+                <div class="auth-buttons">
+                    <li><a href="/login">Login</a></li>
+                    <li><a href="/register">Register</a></li>
+                </div>
+                <div class="user-info" style="display: none;">
+                    <li>Welcome, <span id="userUsername"></span></li>
+                    <li><a href="#" id="logoutButton">Logout</a></li>
+                </div>
+            </ul>
+        </div>
+    </header>
+    
+    <div class="container">
+        <div class="success-container">
+            <div class="success-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            
+            <h2>Booking Successful!</h2>
+            <p>Your bus tickets have been confirmed and payment has been processed successfully.</p>
+            
+            <div class="ticket-number">
+                Ticket #: <span id="ticketNumber">BUS123456</span>
+            </div>
+            
+            <div class="booking-details">
+                <h4>Booking Details</h4>
+                <div class="detail-row">
+                    <span>Bus:</span>
+                    <span id="busName">Express Travels (KA-01-F-1234)</span>
+                </div>
+                <div class="detail-row">
+                    <span>Journey:</span>
+                    <span id="journey">Bangalore to Chennai</span>
+                </div>
+                <div class="detail-row">
+                    <span>Date & Time:</span>
+                    <span id="dateTime">25 Apr 2023, 22:00</span>
+                </div>
+                <div class="detail-row">
+                    <span>Seats:</span>
+                    <span id="seats">3, 4, 5</span>
+                </div>
+                <div class="detail-row">
+                    <span>Passengers:</span>
+                    <span id="passengerCount">3</span>
+                </div>
+                <div class="detail-row">
+                    <span>Amount Paid:</span>
+                    <span id="amountPaid">₹2400</span>
+                </div>
+                <div class="detail-row">
+                    <span>Status:</span>
+                    <span id="status" class="text-success">Confirmed</span>
+                </div>
+            </div>
+            
+            <div class="button-row">
+                <a href="/buses" class="btn btn-primary">Find More Buses</a>
+                <a href="/" class="btn btn-outline-secondary">Return to Home</a>
+            </div>
+            
+            <p class="mt-4">A confirmation email with your e-ticket has been sent to your registered email.</p>
+        </div>
+    </div>
+    
+    <footer>
+        <div class="container">
+            <p>&copy; 2023 BusBooker. All rights reserved.</p>
+        </div>
+    </footer>
+    
+    <script th:src="@{/js/common.js}"></script>
+    <script th:src="@{/js/auth.js}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load booking details from localStorage
+            const bookingId = new URLSearchParams(window.location.search).get('id');
+            
+            if (bookingId) {
+                // Get all bookings from localStorage
+                const myBookings = JSON.parse(localStorage.getItem('myBookings') || '[]');
+                
+                // Find the specific booking
+                const booking = myBookings.find(b => b.id === bookingId);
+                
+                if (booking) {
+                    // Populate booking details
+                    document.getElementById('ticketNumber').textContent = 'BUS' + booking.id;
+                    document.getElementById('busName').textContent = `${booking.busName} (${booking.busNumber})`;
+                    document.getElementById('journey').textContent = `${booking.source} to ${booking.destination}`;
+                    
+                    const departDate = new Date(booking.departureTime);
+                    document.getElementById('dateTime').textContent = departDate.toLocaleString('en-US', {
+                        day: 'numeric',
+                        month: 'short',
+                        year: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    });
+                    
+                    document.getElementById('seats').textContent = booking.seatNumbers.join(', ');
+                    document.getElementById('passengerCount').textContent = booking.passengerCount;
+                    document.getElementById('amountPaid').textContent = `₹${booking.totalFare}`;
+                    document.getElementById('status').textContent = booking.status;
+                }
+            }
+        });
+    </script>
+</body>
+</html> 

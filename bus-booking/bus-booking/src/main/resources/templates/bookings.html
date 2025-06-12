@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Bookings - Bus Booking System</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/styles.css}" onerror="this.onerror=null;this.href='/static/css/styles.css';">
+    <link rel="stylesheet" th:href="@{/css/bookings.css}" onerror="this.onerror=null;this.href='/static/css/bookings.css';">
+</head>
+<body>
+    <header>
+        <div class="navbar">
+            <a href="/" class="logo">BusBooker</a>
+            <ul class="nav-links">
+                <li><a href="/">Home</a></li>
+                <li><a href="/buses">Buses</a></li>
+                <li><a href="/bookings" class="active">My Bookings</a></li>
+                <li><a href="/login" id="loginBtn">Login</a></li>
+                <li><a href="/register" id="registerBtn">Register</a></li>
+                <li><a href="#" id="logoutBtn" style="display: none;">Logout</a></li>
+            </ul>
+        </div>
+    </header>
+    
+    <div class="container bookings-container">
+        <div class="page-header">
+            <h1><i class="fas fa-ticket-alt"></i> My Bookings</h1>
+            <p class="text-muted">View and manage all your bus bookings</p>
+        </div>
+        
+        <!-- Booking Tabs Navigation -->
+        <div class="tab-navigation">
+            <button class="tab-button active" data-tab="all">All Bookings</button>
+            <button class="tab-button" data-tab="upcoming">Upcoming</button>
+            <button class="tab-button" data-tab="completed">Completed</button>
+            <button class="tab-button" data-tab="cancelled">Cancelled</button>
+        </div>
+        
+        <!-- Booking Filters -->
+        <div class="booking-filters">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="dateFilter">Filter by Date</label>
+                        <select class="form-control" id="dateFilter">
+                            <option value="all">All Dates</option>
+                            <option value="today">Today</option>
+                            <option value="week">This Week</option>
+                            <option value="month">This Month</option>
+                            <option value="custom">Custom Range</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="routeFilter">Filter by Route</label>
+                        <select class="form-control" id="routeFilter">
+                            <option value="all">All Routes</option>
+                            <!-- Routes will be populated dynamically -->
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="searchInput">Search Bookings</label>
+                        <input type="text" class="form-control" id="searchInput" placeholder="Search by booking ID, bus, etc.">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Status Filters - Mobile View -->
+            <div class="d-md-none mt-3">
+                <div class="status-filters d-flex overflow-auto">
+                    <div class="status-filter active" data-status="all">All</div>
+                    <div class="status-filter" data-status="confirmed">Confirmed</div>
+                    <div class="status-filter" data-status="pending">Pending</div>
+                    <div class="status-filter" data-status="cancelled">Cancelled</div>
+                    <div class="status-filter" data-status="completed">Completed</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- View Mode Toggle -->
+        <div class="view-mode-toggle d-flex justify-content-between align-items-center">
+            <div>
+                <span id="bookingCount">0</span> bookings found
+            </div>
+            <div>
+                <div class="btn-group" role="group">
+                    <button type="button" class="btn btn-outline-primary active" id="cardViewBtn">
+                        <i class="fas fa-th-large"></i> Card View
+                    </button>
+                    <button type="button" class="btn btn-outline-primary" id="listViewBtn">
+                        <i class="fas fa-list"></i> List View
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Bookings List Container -->
+        <div id="bookingsList">
+            <!-- Bookings will be loaded dynamically here -->
+            <div class="text-center p-5">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <p class="mt-3">Loading your bookings...</p>
+            </div>
+        </div>
+        
+        <!-- Debug Buttons (Only visible in development) -->
+        <div class="mt-4 p-3 bg-light rounded">
+            <h5>Debug Tools</h5>
+            <div class="d-flex gap-2">
+                <button class="btn btn-sm btn-primary" onclick="testLoadSampleData()">
+                    Load Sample Data
+                </button>
+                <button class="btn btn-sm btn-secondary" onclick="localStorage.clear(); window.location.reload()">
+                    Clear Local Storage & Reload
+                </button>
+                <button class="btn btn-sm btn-info" onclick="console.log('Auth Token:', localStorage.getItem('authToken'))">
+                    Check Auth Token
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Passenger Details Modal -->
+    <div class="modal fade" id="passengerDetailsModal" tabindex="-1" aria-labelledby="passengerDetailsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="passengerDetailsModalLabel">Passenger Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="passengerDetailsModalBody">
+                    <!-- Passenger details will be loaded here -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="editPassengersBtn">Edit Passengers</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Bootstrap and other scripts -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    <script th:src="@{/js/common.js?v=4}" onerror="this.onerror=null;this.src='/static/js/common.js?v=4';"></script>
+    <script th:src="@{/js/auth.js?v=4}" onerror="this.onerror=null;this.src='/static/js/auth.js?v=4';"></script>
+    <script th:src="@{/js/bookings.js?v=4}" onerror="this.onerror=null;this.src='/static/js/bookings.js?v=4';"></script>
+    
+    <!-- Debug script to verify loading -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM fully loaded and parsed');
+            console.log('jQuery version:', $.fn.jquery);
+            console.log('Bootstrap version:', typeof bootstrap !== 'undefined' ? 'Loaded' : 'Not loaded');
+        });
+    </script>
+</body>
+</html> 
